@@ -9,7 +9,27 @@ const botTypeClasses = {
   Captain: "icon star",
 };
 
-function BotSpecs({ bot }) {
+function BotSpecs({ selected, setSelected, setShowSpecs, setBotArmy, setAllBots }) {
+  let bot = selected[0]
+
+  const returnToCollection = () => {
+    setShowSpecs(current => !current)
+    setSelected([])
+  }
+
+  const addToArmy = (clickedBot) => {
+    setBotArmy((prevState) => {
+      if (prevState.includes(clickedBot)) return [...prevState]
+      return [...prevState, clickedBot]
+    })
+    setShowSpecs(current => !current)
+    setSelected([])
+    setAllBots((prevState) => {
+      return [...prevState.filter((unit) => {
+        return unit.id !== clickedBot.id
+      })]
+    })
+  }
   return (
     <div className="ui segment">
       <div className="ui two column centered grid">
@@ -53,7 +73,7 @@ function BotSpecs({ bot }) {
             <button
               className="ui button fluid"
               onClick={() =>
-                console.log("connect this to a function that shows all bots")
+                returnToCollection()
               }
             >
               Go Back
@@ -61,9 +81,7 @@ function BotSpecs({ bot }) {
             <button
               className="ui button fluid"
               onClick={() =>
-                console.log(
-                  "connect this to a function that adds this bot to your bot army list"
-                )
+                addToArmy(bot)
               }
             >
               Enlist

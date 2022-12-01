@@ -9,13 +9,48 @@ const botTypeClasses = {
   Captain: "icon star",
 };
 
-function BotCard({ bot }) {
+function BotCard({ bot, setBotArmy, setAllBots, setShowSpecs, setSelected }) {
+
+  const addToArmy = (clickedBot) => {
+    setBotArmy((prevState) => {
+      if (prevState.includes(clickedBot)) return [...prevState]
+      return [...prevState, clickedBot]
+    })
+  }
+
+  const viewBotSpecs = (clickedBot) => {
+    // console.log(clickedBot)
+    setSelected((prevState) => {
+      return [...prevState, clickedBot]
+    })
+    setShowSpecs(current => !current)
+  }
+
+  const destroyBot = (clickedBot) => {
+    setBotArmy((prevState) => {
+      return [...prevState.filter((unit) => {
+        return unit.id !== clickedBot.id
+      })]
+    })
+
+    setAllBots((prevState) => {
+      return [...prevState.filter((unit) => {
+        return unit.id !== clickedBot.id
+      })]
+    })
+
+    fetch(`http://localhost:8002/bots/${clickedBot.id}`, {
+      method: "DELETE"
+    })
+  }
+
   return (
     <div className="ui column">
       <div
         className="ui card"
         key={bot.id}
-        onClick={() => console.log("add code to connect event listener")}
+        //CHANGE THIS BACK TO addToArmy if unable to complete Advanced Deliverable
+        onClick={() => viewBotSpecs(bot)}
       >
         <div className="image">
           <img alt="oh no!" src={bot.avatar_url} />
@@ -44,18 +79,19 @@ function BotCard({ bot }) {
             {bot.armor}
           </span>
           <span>
-            <div className="ui center aligned segment basic">
-              <button
-                className="ui mini red button"
-                onClick={() =>
-                  console.log("add code to connect event listener")
-                }
-              >
-                x
-              </button>
-            </div>
+
           </span>
         </div>
+      </div>
+      <div className="ui center aligned segment basic">
+        <button
+          className="ui mini red button"
+          onClick={() =>
+            destroyBot(bot)
+          }
+        >
+          x
+        </button>
       </div>
     </div>
   );
